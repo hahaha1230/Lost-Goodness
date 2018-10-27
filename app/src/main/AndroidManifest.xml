@@ -50,14 +50,13 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <!-- 设置Bmob的key -->
+        <!-- 高德地图 -->
+        <service android:name="com.amap.api.location.APSService" />
 
+        <!-- 设置高德的key -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="f49e025768f66edaf0aae40d0500fe43" />
-
-        <!-- 高德地图 -->
-        <service android:name="com.amap.api.location.APSService" />
 
         <activity android:name=".activity.SplashActivity">
             <intent-filter>

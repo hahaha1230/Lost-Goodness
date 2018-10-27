@@ -88,7 +88,7 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
     public static final int CUT_PHOTO = 3;
     private NavigationMenu mNavigationMenu;
     private ViewPager viewPager;
-    private WeatherSearchQuery mquery;                //天气查询
+    private WeatherSearchQuery mquery;                 //天气查询
     private WeatherSearch mweathersearch;
     private LocalWeatherLive weatherlive;
     private DrawerLayout mDrawerLayout;
@@ -100,7 +100,9 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
     private TextView monthTv;
     private TextView dataTv;
     private TextView userName;
-    private long firstTime = 0;                      //记录点击back键时间间隔
+    private boolean isPressedBackOnce = false;       //记录是否点击过一次back
+    private long firstPressedTime = 0;               //记录第一次点击back时间
+    private long secondPressedTime = 0;              //记录第二次点击back时间
     private Users user;
     private String phone;                            //记录手机号
     private String weatherNow;                       //记录所在城市的天气
@@ -108,7 +110,7 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
     private String imagePath = null;                 //记录选择图片的路径
     private File mFile;
     private Bitmap mBitmap;
-    public static boolean isReceivePush=true;       //记录用户是否想接收推送
+    public static boolean isReceivePush=true;        //记录用户是否想接收推送
 
 
 
@@ -601,27 +603,6 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
 
 
     /**
-     * 连续点击back键退出程序
-     * @return
-     */
-  /*  @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        long secondTime = System.currentTimeMillis();
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (secondTime - firstTime < 2000) {
-                System.exit(0);
-            } else {
-                Toast.makeText(HomeActivity.this, "再按一次退出程序", Toast.LENGTH_SHORT).show();
-                firstTime = System.currentTimeMillis();
-            }
-            return true;
-        }
-        return false;
-    }
-*/
-
-
-    /**
      * 设置日期
      */
     private void displayData() {
@@ -679,6 +660,35 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
     }
 
 
+
+    /**
+     * 这里重载一下主要是实现两秒之内点击两次back键
+     * 则退出程序
+     */
+    @Override
+    public void onBackPressed() {
+        if (isPressedBackOnce) {
+            // 说明已经按了一次 这是第二次
+            secondPressedTime = System.currentTimeMillis();
+            if (secondPressedTime - firstPressedTime > 2000) {
+                // 第一次点击作废了，重新计算
+                Toast.makeText(this, "再点一次退出", Toast.LENGTH_SHORT).show();
+                isPressedBackOnce = true;
+                firstPressedTime = System.currentTimeMillis();
+            } else {
+                // 说明两秒之内点击的第二次
+                finish();
+                isPressedBackOnce = false;
+                firstPressedTime = 0;
+                secondPressedTime = 0;
+            }
+        } else {
+            // 说明第一次
+            Toast.makeText(this, "再点一次退出",Toast.LENGTH_SHORT).show();
+            isPressedBackOnce = true;
+            firstPressedTime = System.currentTimeMillis();
+        }
+    }
 
     /**
      * 如果AMapLocationClient是在当前Activity实例化的，

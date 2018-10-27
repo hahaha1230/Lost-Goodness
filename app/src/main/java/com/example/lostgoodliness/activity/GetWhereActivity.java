@@ -1,19 +1,25 @@
 package com.example.lostgoodliness.activity;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -37,6 +43,7 @@ import com.example.lostgoodliness.R;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +51,8 @@ import java.util.Map;
 
 
 public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapClickListener,
-        View.OnClickListener,AMap.OnMyLocationChangeListener,GeocodeSearch.OnGeocodeSearchListener{
+        View.OnClickListener, GeocodeSearch.OnGeocodeSearchListener {
+
     private AMap aMap;
     private MapView mapView;
     private AMapLocationClient locationClient = null;
@@ -65,7 +73,7 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
     //记录所点击的纬度
     private double latitude;
     //记录是否第一次定位成功
-    private boolean firstLocation=true;
+    private boolean firstLocation = true;
     //用于逆编码查询的tool
     private GeocodeSearch geocodeSearch;
 
@@ -82,9 +90,9 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
         geocodeSearch = new GeocodeSearch(this);
         geocodeSearch.setOnGeocodeSearchListener(this);
 
+
         initView();
-        initLocation();
-        startLocation();
+        getRight();
     }
 
 
@@ -99,8 +107,8 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
         View view = (View) findViewById(R.id.customTitle);
         backTv = (TextView) view.findViewById(R.id.base_tv_back);
         sureTv = (TextView) view.findViewById(R.id.base_tv_right_btn);
-        baseTitle=(TextView)view.findViewById(R.id.base_tv_title);
-        addressInfoTv=(TextView)findViewById(R.id.addressInfoTv);
+        baseTitle = (TextView) view.findViewById(R.id.base_tv_title);
+        addressInfoTv = (TextView) findViewById(R.id.addressInfoTv);
         baseTitle.setText("Select Where");
 
 
@@ -111,7 +119,52 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
 
 
     /**
+     * 检查是否缺少定位权限
+     * 缺少就去申请，不缺就去定位
+     */
+    private void getRight() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED) {
+            //缺少权限去申请
+            ActivityCompat.requestPermissions(GetWhereActivity.this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        } else { //有权限去定位
+            initLocation();
+            startLocation();
+        }
+    }
+
+
+    /**
+     * 请求权限结果回调
+     *
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    //成功获取到权限去定位
+                    initLocation();
+                    startLocation();
+                } else {
+                    Toast.makeText(GetWhereActivity.this, "没有开启定位权限,无法定位"
+                            , Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    /**
      * 一些控件点击事件
+     *
      * @param v
      */
     @Override
@@ -129,8 +182,8 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
                 Bundle bundle = new Bundle();
                 bundle.putString("city", city);
                 bundle.putString("addressInfo", addressInfo);
-                bundle.putDouble("latitude",latitude);
-                bundle.putDouble("longitude",longitude);
+                bundle.putDouble("latitude", latitude);
+                bundle.putDouble("longitude", longitude);
                 intent.putExtras(bundle);
                 setResult(RESULT_OK, intent);
                 finish();
@@ -192,29 +245,25 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
     /**
      * 添加定位监听
      */
-    AMapLocationListener locationListener=new AMapLocationListener() {
+    AMapLocationListener locationListener = new AMapLocationListener() {
         @Override
         public void onLocationChanged(AMapLocation aMapLocation) {
-            if (firstLocation){
+            if (firstLocation) {
                 LatLng latLng = new LatLng(aMapLocation.getLatitude(), aMapLocation.getLongitude());
                 aMap.moveCamera(CameraUpdateFactory.changeLatLng(latLng));
                 aMap.moveCamera(CameraUpdateFactory.zoomTo(15));
-                Log.d("hhh","经纬度分别是"+aMapLocation.getLatitude()+aMapLocation.getLongitude());
+                Log.d("hhh", "经纬度分别是" + aMapLocation.getLatitude() + aMapLocation.getLongitude());
                 //getAddressInfo(latLng);
                 getAddressByLatlng(latLng);
-                firstLocation=false;
+                firstLocation = false;
             }
         }
     };
 
 
-    @Override
-    public void onMyLocationChange(Location location) {
-        //addressInfoTv.setText(location.);
-    }
-
     /**
      * 地图的点击事件
+     *
      * @param latLng
      */
     @Override
@@ -234,7 +283,6 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
         //getAddressInfo(latLng);
         getAddressByLatlng(latLng);
     }
-
 
 
     /**
@@ -279,10 +327,6 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
     }
 
 
-
-
-
-
     /**
      * handler接收信息
      */
@@ -301,6 +345,7 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
 
     /**
      * 根据 latlng 进行逆编码查询
+     *
      * @param latLng
      */
     private void getAddressByLatlng(LatLng latLng) {
@@ -315,6 +360,7 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
 
     /**
      * 不知道是什么回调
+     *
      * @param geocodeResult
      * @param i
      */
@@ -334,11 +380,10 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
         dismissDialog();
         String simpleAddress;
         String formatAddress = regeocodeResult.getRegeocodeAddress().getFormatAddress();
-        city=regeocodeResult.getRegeocodeAddress().getCity();
-        addressInfo=formatAddress;
+        city = regeocodeResult.getRegeocodeAddress().getCity();
+        addressInfo = formatAddress;
         addressInfoTv.setText(formatAddress);
     }
-
 
 
     /**
@@ -366,6 +411,7 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
 
     /**
      * 判断dialog是否正在显示
+     *
      * @return
      */
     private boolean dialogIsShow() {
@@ -374,7 +420,7 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
 
 
     /**
-     *初始化定位参数
+     * 初始化定位参数
      *
      * @author hongming.wang
      * @since 2.8.0
