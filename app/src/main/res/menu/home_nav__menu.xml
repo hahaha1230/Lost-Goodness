@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/sign_out"
+            android:title="sign out"
+            android:icon="@mipmap/sign_out"
+           />
+
+        <item
+            android:id="@+id/cancel_push"
+            android:title="cancel push"
+            android:checkable="true"
+            android:icon="@mipmap/cancel_push"/>
+    </group>
+
+</menu>
