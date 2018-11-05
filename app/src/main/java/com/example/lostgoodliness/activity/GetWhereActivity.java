@@ -68,6 +68,7 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
     private String city;
     //记录所点击的具体信息；
     private String addressInfo;
+    //卷积算法进十级房
     //记录所点击的经度
     private double longitude;
     //记录所点击的纬度

@@ -289,6 +289,7 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
+
         if (isSaved) {
             finish();
         }
