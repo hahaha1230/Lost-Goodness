@@ -39,7 +39,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
-    
+
     private void initView() {
         phoneNumber=(EditText)findViewById(R.id.phone);
         verifyCode=(EditText)findViewById(R.id.verifyCode);

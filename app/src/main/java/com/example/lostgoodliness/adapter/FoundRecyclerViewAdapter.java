@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
 import com.example.lostgoodliness.javabean.FoundTable;
 import com.example.lostgoodliness.javabean.Users;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -33,21 +35,21 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecyclerViewAdapter.MyViewHolder> {
 
-
     private List<FoundTable> mDatas;
     private Context context;
     private Users user;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
+    private boolean isScrolling;
 
-    private MyRecyclerViewOnclickInterface mOnItemClickLitener;
 
-    public void setOnItemClickLitener(MyRecyclerViewOnclickInterface mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
-    }
-
-    public FoundRecyclerViewAdapter(Context context, List<FoundTable> mDatas, Users users) {
+    public FoundRecyclerViewAdapter(Context context, List<FoundTable> mDatas, Users user, ImageLoader
+            imageLoader,DisplayImageOptions options) {
         this.context = context;
         this.mDatas = mDatas;
-        this.user=users;
+        this.user=user;
+        this.imageLoader=imageLoader;
+        this.options=options;
     }
 
 
@@ -59,6 +61,7 @@ public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecycler
         return holder;
     }
 
+
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final FoundTable foundTable=mDatas.get(position);
@@ -69,12 +72,24 @@ public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecycler
         else {
             display+=")捡到了一个" +foundTable.getFindType();
         }
+
         holder.tv.setText(display);
         holder.phoneTV.setText(foundTable.getPhone());
         holder.date.setText(foundTable.getFindTime());
-        loadUserIcon(holder.userIcon,user.getUserIcon());
+        String userIcon=foundTable.getLinkUsers().getUserIcon();
+        Log.d("hhh","usericon is"+userIcon);
+        holder.userIcon.setTag(userIcon);
+       /* if(!userIcon.equals(holder.userIcon.getTag()))
+        {
+
+        }*/
+        imageLoader.displayImage(userIcon,holder.userIcon,options);
+       // loadUserIcon(holder.userIcon,user.getUserIcon());
 
 
+        /**
+         * item的点击事件
+         */
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,7 +103,6 @@ public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecycler
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-
                 final String[] items = { "删除","取消" };
                 final AlertDialog.Builder listDialog =
                         new AlertDialog.Builder(context);
@@ -112,46 +126,21 @@ public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecycler
                                 }
                             });
                         }
-                        else {
-
-                        }
-
                     }
                 });
                 listDialog.show();
-
                 return true;
             }
         });
 
-        // 如果设置了回调，则设置点击事件
-        if (mOnItemClickLitener != null) {
-            //点击监听
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
-                }
-            });
-
-            //长按监听
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemLongClick(holder.itemView, pos);
-                    //返回true可以让长按事件被消耗，避免出发点击事件
-                    return true;
-                }
-            });
-        }
     }
 
 
 
 
     private void loadUserIcon(final CircleImageView userIcon, String userIconUrl) {
+
+
         if (userIconUrl != null) {
             ImageLoader.getInstance().loadImage(userIconUrl, new ImageLoadingListener() {
                 @Override
@@ -180,6 +169,7 @@ public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecycler
         }
 
     }
+
     @Override
     public int getItemCount() {
         return mDatas.size();

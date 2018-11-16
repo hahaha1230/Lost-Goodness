@@ -19,6 +19,8 @@ import com.example.lostgoodliness.utils.DividerItemDecoration;
 import com.example.lostgoodliness.Interface.MyRecyclerViewOnclickInterface;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.javabean.LostTable;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.support.v4.app.Fragment;
 import android.widget.TextView;
@@ -44,10 +46,13 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
     private RecyclerView mRecyclerview;
     public static final int UPDATE_DATA=1;
     public static final int UPDATE_TEXT=2;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
     private ProgressDialog progressDialog;
     private TextView notFoundTV;
     private String phone;
     private Users user;
+    private BmobQuery<LostTable> queryLost ;
 
 
 
@@ -58,7 +63,6 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
         Bundle bundle = getArguments();
         phone = bundle.getString("phone");
         user=(Users) bundle.getSerializable("user");
-        Log.d("hhh","在lost fragment中获得的user数据"+user.getPhone()+user.getUserIcon());
         ButterKnife.bind(this, view);
 
         mRecyclerview=(RecyclerView)view.findViewById(R.id.lostFragmentRV);
@@ -71,14 +75,35 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
             }
         });
 
+        initConfiguration();
+
+        initData();
+
+        return view;
+    }
+
+    /**
+     * 初始化一些配置
+     */
+    private void initConfiguration() {
+        imageLoader=ImageLoader.getInstance();
+        options=new DisplayImageOptions.Builder()   // 设置图片显示相关参数
+                // .showImageOnLoading(R.drawable.ic_stub) // 设置图片下载期间显示的图片
+                // .showImageForEmptyUri(R.drawable.ic_empty) // 设置图片Uri为空或是错误的时候显示的图片
+                //.showImageOnFail(R.drawable.ic_error) // 设置图片加载或解码过程中发生错误显示的图片
+                .cacheInMemory(true) // 设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true) // 设置下载的图片是否缓存在SD卡中
+                //.displayer(new RoundedBitmapDisplayer(20)) // 设置成圆角图片
+                .build(); // 构建完成;
+
         //初始化progressdialog
         progressDialog=new ProgressDialog(getActivity());
         progressDialog.setMessage("数据正在加载中...");
         progressDialog.setCancelable(true);
 
-        initData();
-
-        return view;
+        queryLost = new BmobQuery<>();
+        queryLost.addWhereEqualTo("phone", phone);
+        queryLost.include("linkUsers");
     }
 
 
@@ -86,8 +111,6 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
      * 下拉进行刷新
      */
     private void refresh(){
-        BmobQuery<LostTable> queryLost = new BmobQuery<>();
-        queryLost.addWhereEqualTo("phone", phone);
         queryLost.findObjects(new FindListener<LostTable>() {
             @Override
             public void done(List<LostTable> list, BmobException e) {
@@ -98,7 +121,7 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
                    return;
                 }
 
-                mAdapter = new LostRecyclerViewAdapter(getActivity(), lostTableList,user);
+                mAdapter = new LostRecyclerViewAdapter(getActivity(), lostTableList,user,imageLoader,options);
                 //设置布局管理器
                 LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
                 mRecyclerview.setLayoutManager(layoutManager);
@@ -124,8 +147,6 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
         new Thread(new Runnable() {
             @Override
             public void run() {
-                BmobQuery<LostTable> queryLost = new BmobQuery<>();
-                queryLost.addWhereEqualTo("phone", phone);
                 queryLost.findObjects(new FindListener<LostTable>() {
                     @Override
                     public void done(List<LostTable> list, BmobException e) {
@@ -153,12 +174,11 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
      * 子线程获取到数据后在这里进行更新界面
      */
     private Handler handler=new Handler(){
-
         public void  handleMessage(Message msg){
             switch (msg.what){
                 case UPDATE_DATA:
                     progressDialog.dismiss();
-                    mAdapter = new LostRecyclerViewAdapter(getActivity(), lostTableList,user);
+                    mAdapter = new LostRecyclerViewAdapter(getActivity(), lostTableList,user,imageLoader,options);
                     //设置布局管理器
                     LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
                     mRecyclerview.setLayoutManager(layoutManager);

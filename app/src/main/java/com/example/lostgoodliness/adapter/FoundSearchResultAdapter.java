@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
 import com.example.lostgoodliness.javabean.FoundTable;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -31,8 +33,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchResultAdapter.ViewHolder> {
     private List<FoundTable> mFoundSearchResult;
-    private Users user;
     private Context context;
+    private boolean isScrolling;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
+
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         CircleImageView userIcon;
@@ -48,23 +53,27 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
             date=(TextView)view.findViewById(R.id.date);
         }
     }
+    public void  setScrolling(boolean scrolling)
+    {
+        isScrolling=scrolling;
+    }
 
     /**
      * 构造函数，设置初始化时候需要传入的参数
      * @param searchResults
-     * @param user
+
      */
-    public FoundSearchResultAdapter(List<FoundTable> searchResults,Users user,Context context) {
+    public FoundSearchResultAdapter(List<FoundTable> searchResults,Context context, ImageLoader imageLoader,DisplayImageOptions options) {
         this.mFoundSearchResult = searchResults;
-        this.user=user;
         this.context=context;
+        this.imageLoader=imageLoader;
+        this.options=options;
     }
 
     @Override
     public FoundSearchResultAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.people_item_layout
                 , parent, false);
-        Toast.makeText(context,"共有"+mFoundSearchResult.size()+"条数据",Toast.LENGTH_SHORT).show();
         final FoundSearchResultAdapter.ViewHolder holder = new FoundSearchResultAdapter.ViewHolder(view);
 
         holder.textView.setOnClickListener(new View.OnClickListener() {
@@ -84,7 +93,7 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
     @Override
     public void onBindViewHolder(FoundSearchResultAdapter.ViewHolder holder, int position) {
         FoundTable foundTable=mFoundSearchResult.get(position);
-        loadUserIcon(holder.userIcon,user.getUserIcon());
+        //loadUserIcon(holder.userIcon,user.getUserIcon());
         String display=foundTable.getUserName();
         if (foundTable.getCity()!=null){
             display+="在"+foundTable.getCity() +"捡到了一个" +foundTable.getFindType();
@@ -95,6 +104,16 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
         holder.textView.setText(display);
         holder.phoneTV.setText(foundTable.getPhone());
         holder.date.setText(foundTable.getFindTime());
+        //设置占位符
+        //holder.userIcon.setImageDrawable(context.getDrawable(R.mipmap.home_background));
+        //设置tag
+        String userIcon=foundTable.getLinkUsers().getUserIcon();
+        holder.userIcon.setTag(userIcon);
+        /*if( !isScrolling && foundTable.getLinkUsers().getUserIcon().equals(holder.userIcon.getTag()))
+        {
+
+        } */
+        imageLoader.displayImage(userIcon,holder.userIcon,options);
     }
 
     /**
@@ -104,41 +123,5 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
     @Override
     public int getItemCount() {
         return mFoundSearchResult.size();
-    }
-
-
-    /**
-     * 加载头像
-     * @param userIcon
-     * @param userIconUrl
-     */
-    private void loadUserIcon(final CircleImageView userIcon, String userIconUrl) {
-        if (userIconUrl != null) {
-            ImageLoader.getInstance().loadImage(userIconUrl, new ImageLoadingListener() {
-                @Override
-                public void onLoadingStarted(String s, View view) {
-                    userIcon.setImageResource(R.mipmap.icon_fall);
-                }
-
-                @Override
-                public void onLoadingFailed(String s, View view, FailReason failReason) {
-                    userIcon.setImageResource(R.mipmap.home_background);
-                }
-
-                @Override
-                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                    userIcon.setImageBitmap(bitmap);
-                }
-
-                @Override
-                public void onLoadingCancelled(String s, View view) {
-                }
-            });
-        }
-        //如果头像上传为空时候进行设置一张图片
-        else {
-            userIcon.setImageResource(R.mipmap.home_background);
-        }
-
     }
 }

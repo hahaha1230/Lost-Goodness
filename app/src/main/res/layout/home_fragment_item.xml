@@ -30,19 +30,18 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="24dp"
             android:layout_marginRight="24dp"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="35dp"
             android:id="@+id/recommend_text"
-            android:layout_above="@+id/text_author"
+            android:layout_below="@+id/photographer"
             android:textSize="14dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginTop="120dp"
-            android:gravity="bottom|center"
+            android:layout_marginTop="60dp"
             android:id="@+id/text_author"
-            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:layout_below="@+id/recommend_text"
             android:textSize="12dp" />
 
     </RelativeLayout>

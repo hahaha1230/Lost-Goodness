@@ -17,7 +17,16 @@ public class LostTable extends BmobObject {
     private String lostGoodImage;
     private double latitude;
     private double longitude;
+    private Users linkUsers;
 
+
+    public Users getLinkUsers() {
+        return linkUsers;
+    }
+
+    public void setLinkUsers(Users linkUsers) {
+        this.linkUsers = linkUsers;
+    }
 
     public String getLostGoodImage() {
         return lostGoodImage;

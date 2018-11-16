@@ -214,18 +214,19 @@ public class FoundGoodsActivity extends AppCompatActivity implements View.OnClic
         foundTable.setLongitude(longitude);
         foundTable.setLatitude(latitude);
         foundTable.setUserName(user.getName());
+        Users users=new Users();
+        users.setObjectId(user.getObjectId());
+        foundTable.setLinkUsers(users);
 
         if (mFile != null) {
             imagePath = mFile.getPath();
         }
 
         if (imagePath!=null){
-            Log.d("hhh","image file is not null");
             final BmobFile bmobFile = new BmobFile(new File(imagePath));
             bmobFile.uploadblock(new UploadFileListener() {
                 @Override
                 public void done(BmobException e) {
-                    Log.d("hhh","上传的图片成功");
                     if (e == null) {
                         //得到上传的图片地址
                         String fileUrl = bmobFile.getFileUrl();
@@ -236,7 +237,6 @@ public class FoundGoodsActivity extends AppCompatActivity implements View.OnClic
             });
         }
         else {
-            Log.d("hhh","mfile is null");
             submitAndPush(foundTable);
         }
     }

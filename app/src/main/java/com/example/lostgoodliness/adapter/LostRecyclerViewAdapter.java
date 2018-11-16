@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Path;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
 import com.example.lostgoodliness.javabean.FoundTable;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -37,17 +40,17 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
     private Context context;
     private List<LostTable> mDatas;
     private Users user;
+    private ImageLoader imageLoader;
+    private DisplayImageOptions options;
 
-    private MyRecyclerViewOnclickInterface mOnItemClickLitener;
 
-    public void setOnItemClickLitener(MyRecyclerViewOnclickInterface mOnItemClickLitener) {
-        this.mOnItemClickLitener = mOnItemClickLitener;
-    }
-
-    public LostRecyclerViewAdapter(Context context, List<LostTable> mDatas, Users users) {
+    public LostRecyclerViewAdapter(Context context, List<LostTable> mDatas, Users users,ImageLoader imageLoade,
+                                   DisplayImageOptions options) {
         this.context = context;
         this.mDatas = mDatas;
         this.user=users;
+        this.imageLoader=imageLoade;
+        this.options=options;
     }
 
 
@@ -73,9 +76,16 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
         holder.tv.setText(display );
         holder.phoneTV.setText(lostTable.getPhone());
         holder.date.setText(lostTable.getLostTime());
-        loadUserIcon(holder.userIcon,user.getUserIcon());
+        String userIcon=lostTable.getLinkUsers().getUserIcon();
+        holder.userIcon.setTag(userIcon);
+        /*if(!lostTable.getLinkUsers().getUserIcon().equals(holder.userIcon.getTag()))
+        {
 
+        }*/
+        Log.d("hhh","usericon losr is"+userIcon);
+        imageLoader.displayImage(userIcon,holder.userIcon,options);
 
+      //点击事件
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,6 +96,7 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
             }
         });
 
+        //长按事件
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -122,57 +133,6 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
                 return true;
             }
         });
-        // 如果设置了回调，则设置点击事件
-        if (mOnItemClickLitener != null) {
-            //点击监听
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemClick(holder.itemView, pos);
-                }
-            });
-
-            //长按监听
-            holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    int pos = holder.getLayoutPosition();
-                    mOnItemClickLitener.onItemLongClick(holder.itemView, pos);
-                    //返回true可以让长按事件被消耗，避免出发点击事件
-                    return true;
-                }
-            });
-        }
-    }
-
-    private void loadUserIcon(final CircleImageView userIcon, String userIconUrl) {
-        if (userIconUrl != null) {
-            ImageLoader.getInstance().loadImage(userIconUrl, new ImageLoadingListener() {
-                @Override
-                public void onLoadingStarted(String s, View view) {
-                    userIcon.setImageResource(R.mipmap.icon_fall);
-                }
-
-                @Override
-                public void onLoadingFailed(String s, View view, FailReason failReason) {
-                    userIcon.setImageResource(R.mipmap.home_background);
-                }
-
-                @Override
-                public void onLoadingComplete(String s, View view, Bitmap bitmap) {
-                    userIcon.setImageBitmap(bitmap);
-                }
-
-                @Override
-                public void onLoadingCancelled(String s, View view) {
-                }
-            });
-        }
-        //如果头像上传为空时候进行设置一张图片
-        else {
-            userIcon.setImageResource(R.mipmap.home_background);
-        }
 
     }
 

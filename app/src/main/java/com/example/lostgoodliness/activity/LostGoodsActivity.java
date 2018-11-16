@@ -214,6 +214,9 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         lostTable.setGoodsDescribe(goodsDescribe.getText().toString());
         lostTable.setPhone(phone);
         lostTable.setUserName(user.getName());
+        Users users=new Users();
+        users.setObjectId(user.getObjectId());
+        lostTable.setLinkUsers(users);
         if (latitude != 0 && longitude != 0) {
             lostTable.setLatitude(latitude);
             lostTable.setLongitude(longitude);

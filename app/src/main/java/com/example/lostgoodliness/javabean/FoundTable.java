@@ -19,6 +19,17 @@ public class FoundTable extends BmobObject implements Serializable{
     private String foundGoodImage;
     private double latitude;
     private double longitude;
+    private Users linkUsers;
+
+    public Users getLinkUsers() {
+        return linkUsers;
+    }
+
+    public void setLinkUsers(Users linkUsers) {
+        this.linkUsers = linkUsers;
+    }
+
+
 
     public String getFoundGoodImage() {
         return foundGoodImage;

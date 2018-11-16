@@ -267,6 +267,7 @@ public class SearchInfoActivity extends AppCompatActivity implements View.OnClic
         else {
             Log.d("hhh","模糊查询条件为空");
         }
+        query.include("linkUsers");
         query.findObjects(new FindListener<LostTable>() {
             @Override
             public void done(List<LostTable> list, BmobException e) {
@@ -310,7 +311,6 @@ public class SearchInfoActivity extends AppCompatActivity implements View.OnClic
                         bundle.putSerializable("lostTable", (Serializable) list);
                         intent.putExtras(bundle);
                         intent.putExtra("LostOrFound", "lost");
-                        //intent.putExtra("whoseRecord","others");
                         intent.putExtra("user",user);
                         startActivity(intent);
                     }
@@ -340,6 +340,7 @@ public class SearchInfoActivity extends AppCompatActivity implements View.OnClic
         if (!searchKeyWord.isEmpty()) {
             query.addWhereContains("goodsDescribe", searchKeyWord);
         }
+        query.include("linkUsers");
         query.findObjects(new FindListener<FoundTable>() {
             @Override
             public void done(List<FoundTable> list, BmobException e) {
