@@ -22,6 +22,11 @@ import android.widget.Toast;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import net.sf.json.JSONObject;
+
 
 import java.io.File;
 import java.util.Calendar;
@@ -244,7 +249,6 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
             });
         }
         else {
-            Log.d("hhh","mfile is null");
             submitAndPush(lostTable);
         }
 
@@ -280,6 +284,13 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         BmobQuery<BmobInstallation> query = BmobInstallation.getQuery();
         query.addWhereEqualTo("deviceType", "android");
         bmobPushManager.setQuery(query);
+        String jsonString=new Gson().toJson(lostTable);
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject=JSONObject.fromObject(jsonString);
+        //JSONObject.fromObject(str)
+
+        //org.json.JSONObject jsonObject1=jsonObject;
+
         bmobPushManager.pushMessage(msg, new PushListener() {
             @Override
             public void done(BmobException e) {
@@ -298,7 +309,6 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         }
 
     }
-
 
     /**
      * 处理由map activity返回回来的数据以及拍照等返回的数据

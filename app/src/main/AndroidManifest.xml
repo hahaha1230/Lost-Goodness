@@ -37,6 +37,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:resizeableActivity="false"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <!-- 对内容提供器进行注册 -->
@@ -58,34 +59,18 @@
             android:name="com.amap.api.v2.apikey"
             android:value="f49e025768f66edaf0aae40d0500fe43" />
 
-        <activity android:name=".activity.SplashActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".activity.LoginActivity"></activity>
-        <activity android:name=".activity.LostGoodsActivity" />
-        <activity android:name=".activity.GetWhereActivity" />
-        <activity android:name=".activity.FoundGoodsActivity" />
-        <activity android:name=".activity.SearchInfoActivity" />
-        <activity android:name=".activity.SearchResultsActivity" />
-        <activity android:name=".activity.RegisterActivity" />
-        <activity android:name=".activity.SetPasswordActivity" />
-        <activity android:name=".activity.HomeActivity" />
-        <activity android:name=".activity.MyIssueRecordActivity" />
-        <activity android:name=".activity.LostPasswordActivity" />
-
+        <!--TODO 集成：1.2、添加推送所需要的服务和广播-->
         <service
             android:name="cn.bmob.push.lib.service.PushService"
-            android:exported="true"
+            android:exported="false"
             android:label="PushService"
             android:process=":bmobpush">
             <intent-filter>
                 <action android:name="cn.bmob.push.lib.service.PushService" />
             </intent-filter>
         </service>
+
 
         <receiver android:name="cn.bmob.push.PushReceiver">
             <intent-filter>
@@ -119,6 +104,25 @@
             </intent-filter>
         </receiver>
 
+
+        <activity android:name=".activity.SplashActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LostGoodsActivity" />
+        <activity android:name=".activity.GetWhereActivity" />
+        <activity android:name=".activity.FoundGoodsActivity" />
+        <activity android:name=".activity.SearchInfoActivity" />
+        <activity android:name=".activity.SearchResultsActivity" />
+        <activity android:name=".activity.RegisterActivity" />
+        <activity android:name=".activity.SetPasswordActivity" />
+        <activity android:name=".activity.HomeActivity" />
+        <activity android:name=".activity.MyIssueRecordActivity" />
+        <activity android:name=".activity.LostPasswordActivity" />
         <activity android:name=".activity.GoodsDetailsInfoActivity"></activity>
     </application>
 

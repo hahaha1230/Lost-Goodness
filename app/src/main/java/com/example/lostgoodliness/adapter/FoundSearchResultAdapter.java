@@ -93,7 +93,6 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
     @Override
     public void onBindViewHolder(FoundSearchResultAdapter.ViewHolder holder, int position) {
         FoundTable foundTable=mFoundSearchResult.get(position);
-        //loadUserIcon(holder.userIcon,user.getUserIcon());
         String display=foundTable.getUserName();
         if (foundTable.getCity()!=null){
             display+="在"+foundTable.getCity() +"捡到了一个" +foundTable.getFindType();
@@ -104,8 +103,6 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
         holder.textView.setText(display);
         holder.phoneTV.setText(foundTable.getPhone());
         holder.date.setText(foundTable.getFindTime());
-        //设置占位符
-        //holder.userIcon.setImageDrawable(context.getDrawable(R.mipmap.home_background));
         //设置tag
         String userIcon=foundTable.getLinkUsers().getUserIcon();
         holder.userIcon.setTag(userIcon);

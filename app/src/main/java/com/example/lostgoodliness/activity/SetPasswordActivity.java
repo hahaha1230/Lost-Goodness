@@ -72,6 +72,9 @@ public class SetPasswordActivity extends AppCompatActivity {
         initView();
     }
 
+    /**
+     * 初始化界面
+     */
     private void initView() {
         userIcon=(CircleImageView)findViewById(R.id.user_icon);
         userName=(EditText)findViewById(R.id.set_user_name);
@@ -108,6 +111,7 @@ public class SetPasswordActivity extends AppCompatActivity {
             }
         });
 
+        //判断显示还是隐藏密码
         password.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -134,6 +138,7 @@ public class SetPasswordActivity extends AppCompatActivity {
             }
         });
 
+        //进行判断注册
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

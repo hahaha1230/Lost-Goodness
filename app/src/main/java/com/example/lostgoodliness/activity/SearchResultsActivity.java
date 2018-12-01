@@ -14,6 +14,7 @@ import com.example.lostgoodliness.adapter.LostSearchResultAdapter;
 import com.example.lostgoodliness.javabean.FoundTable;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
+import com.example.lostgoodliness.utils.DividerItemDecoration;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -23,16 +24,15 @@ import java.util.List;
 public class SearchResultsActivity extends AppCompatActivity {
     private List<LostTable> mLostTable = new ArrayList<LostTable>();
     private List<FoundTable> mFoundTable = new ArrayList<FoundTable>();
-    private Users user;
-    private boolean isLost = true;
+    private DisplayImageOptions options;
+    private ImageLoader imageLoader;
     private TextView backTv;
     private TextView sureTv;
     private TextView baseTitle;
-    private boolean isMyRecord;
-    //private String whoseRecord;
     private String findOrLost;
-    private ImageLoader imageLoader;
-    private DisplayImageOptions options;
+    private boolean isLost = true;
+    private Users user;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,12 +41,8 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         imageLoader=ImageLoader.getInstance();
         options=new DisplayImageOptions.Builder()   // 设置图片显示相关参数
-                // .showImageOnLoading(R.drawable.ic_stub) // 设置图片下载期间显示的图片
-                // .showImageForEmptyUri(R.drawable.ic_empty) // 设置图片Uri为空或是错误的时候显示的图片
-                //.showImageOnFail(R.drawable.ic_error) // 设置图片加载或解码过程中发生错误显示的图片
                 .cacheInMemory(true) // 设置下载的图片是否缓存在内存中
                 .cacheOnDisk(true) // 设置下载的图片是否缓存在SD卡中
-                //.displayer(new RoundedBitmapDisplayer(20)) // 设置成圆角图片
                 .build(); // 构建完成;
 
 
@@ -61,6 +57,8 @@ public class SearchResultsActivity extends AppCompatActivity {
             final FoundSearchResultAdapter adapter = new FoundSearchResultAdapter(mFoundTable
             ,SearchResultsActivity.this,imageLoader,options);
             adapter.setHasStableIds(true);
+            recyclerView.addItemDecoration(new DividerItemDecoration(this,
+                    DividerItemDecoration.VERTICAL_LIST));
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -82,6 +80,8 @@ public class SearchResultsActivity extends AppCompatActivity {
             final LostSearchResultAdapter adapter = new LostSearchResultAdapter(mLostTable,
                     SearchResultsActivity.this,imageLoader,options);
             adapter.setHasStableIds(true);
+            recyclerView.addItemDecoration(new DividerItemDecoration(this,
+                    DividerItemDecoration.VERTICAL_LIST));
             recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -97,8 +97,6 @@ public class SearchResultsActivity extends AppCompatActivity {
             });
             recyclerView.setAdapter(adapter);
         }
-
-
     }
 
 

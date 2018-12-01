@@ -82,7 +82,7 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
         {
 
         }*/
-        Log.d("hhh","usericon losr is"+userIcon);
+
         imageLoader.displayImage(userIcon,holder.userIcon,options);
 
       //点击事件
@@ -142,8 +142,6 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
-
-
         CircleImageView userIcon;
         TextView phoneTV;
         TextView tv;

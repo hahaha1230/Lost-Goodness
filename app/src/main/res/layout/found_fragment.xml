@@ -3,13 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:visibility="gone"
-        android:id="@+id/notFoundTV"
-        android:text="不知道为什么显示不出数据，请先下刷新看看有没有数据"/>
+
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:layout_width="match_parent"

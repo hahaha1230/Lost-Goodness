@@ -1,12 +1,12 @@
 package com.example.lostgoodliness.activity;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.javabean.Users;
+import com.example.lostgoodliness.utils.MyCountDownTimer;
 
 import java.util.List;
 
@@ -24,64 +25,55 @@ import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.UpdateListener;
 
-public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
+public class RegisterActivity extends AppCompatActivity{
+    private MyCountDownTimer myCountDownTimer;
     private EditText phoneNumber;
     private EditText verifyCode;
-    private  Button next;
+    private Button sendCodeBt;
+    private Button next;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-
         initView();
     }
 
 
-
+    /**
+     * 初始化界面
+     */
     private void initView() {
         phoneNumber=(EditText)findViewById(R.id.phone);
         verifyCode=(EditText)findViewById(R.id.verifyCode);
         verifyCode.setInputType( InputType.TYPE_CLASS_NUMBER);
+        sendCodeBt=(Button)findViewById(R.id.sendcode_bt);
+        next=(Button)findViewById(R.id.next);
         //只能输入数字
         phoneNumber.setInputType( InputType.TYPE_CLASS_NUMBER);
 
-        next=(Button)findViewById(R.id.next);
-        next.setOnClickListener(this);
-        verifyCode.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.d("hhh","ontouch 事件");
-                Drawable drawable=verifyCode.getCompoundDrawables()[2];
-                if (drawable == null)
-                    return false;
-                //如果不是按下事件，不再处理
-                if (event.getAction() != MotionEvent.ACTION_UP)
-                    return false;
-                if (event.getX()>verifyCode.getWidth()-verifyCode.getPaddingRight()
-                        -drawable.getIntrinsicWidth()) {
-                    Log.d("hhh","ontouch 事件11");
-                    getCode();
-                }
+        //new倒计时对象,总共的时间,每隔多少秒更新一次时间
+         myCountDownTimer = new MyCountDownTimer(60000,
+                1000,sendCodeBt);
 
-                    return false;
+
+        sendCodeBt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCode();
+            }
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                nextProgress();
             }
         });
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()){
-            case R.id.next:
-                nextProgress();
-                break;
 
-                default:
-                    break;
-        }
-
-    }
 
     /**
      * 判断验证码是否正确，正确的话进行跳转
@@ -89,28 +81,25 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private void nextProgress() {
         final String phone=phoneNumber.getText().toString().trim();
         String code=verifyCode.getText().toString();
-        if (phone.isEmpty()||code.isEmpty()){
-            Toast.makeText(RegisterActivity.this,"手机号或验证码为空！",Toast.LENGTH_SHORT).show();
+
+        //验证手机号
+        if (!isMobileNO(phone)){
+            Toast.makeText(this,"手机号格式不正确",Toast.LENGTH_SHORT).show();
             return;
         }
+        //验证验证码是否正确
         else {
-
-            /**
-             * 验证验证码是否正确
-             */
             BmobSMS.verifySmsCode(phone, code, new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
-                        Log.d("hhh","验证成功："+"\n");
+                        clearTimer();
                         Intent intent=new Intent(RegisterActivity.this,SetPasswordActivity.class);
                         intent.putExtra("phone",phone);
                         intent.putExtra("command","register");
                         startActivity(intent);
-
                     } else {
-                        Toast.makeText(RegisterActivity.this,"验证失败",
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this,"验证码不正确",Toast.LENGTH_SHORT).show();
                         return;
                     }
                 }
@@ -119,16 +108,32 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
     }
 
+    private void clearTimer() {
+      /*  if (task != null) {
+            task.cancel();
+            task = null;
+        }
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }*/
+    }
+
+
+
     /**
      * 发送验证码给手机
      *
      */
     public void getCode(){
        final String phone=phoneNumber.getText().toString().trim();
-        if (phone.length()!=11){
-            Toast.makeText(RegisterActivity.this,"您输入的手机号有误！",Toast.LENGTH_SHORT).show();
-            return;
-        }
+
+       if (!isMobileNO(phone))
+       {
+           Toast.makeText(this,"手机号格式不正确",Toast.LENGTH_SHORT).show();
+           return;
+       }
+
         /**
          * 先进行查询，如果User里面已经存在该手机号，则已经注册，提示
          * 用密码登录，否则，发送验证码
@@ -149,6 +154,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                         @Override
                         public void done(Integer integer, BmobException e) {
                             if (e==null){
+                                myCountDownTimer.start();
                                 Toast.makeText(RegisterActivity.this,"验证码发送成功，" +
                                         "请注意查收",Toast.LENGTH_SHORT).show();
 
@@ -166,5 +172,28 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
         });
     }
+
+
+    /**
+     * 验证手机号格式正确性
+     */
+    public static boolean isMobileNO(String mobiles) {
+	/*
+	移动：134、135、136、137、138、139、150、151、147(TD)、157(TD)、158、159、178、187、188
+	联通：130、131、132、152、155、156、176、185、186
+	电信：133、153、177、180、189、（1349卫通）
+	总结起来就是第一位必定为1，第二位必定为3、4、5、7或8，其他位置的可以为0-9
+	*/
+        String telRegex = "[1][34578]\\d{9}";
+        if (TextUtils.isEmpty(mobiles)) {
+            return false;
+        }
+        else {
+            return mobiles.matches(telRegex);
+        }
+    }
+
+
+
 
 }
