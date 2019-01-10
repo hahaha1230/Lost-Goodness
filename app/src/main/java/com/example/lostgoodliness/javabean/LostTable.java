@@ -7,17 +7,17 @@ import cn.bmob.v3.BmobObject;
  */
 
 public class LostTable extends BmobObject {
-    private String phone;
-    private String userName;
-    private String lostTime;
-    private String lostType;
-    private String lostWhere;
-    private String goodsDescribe;
-    private String city;
-    private String lostGoodImage;
-    private double latitude;
-    private double longitude;
-    private Users linkUsers;
+    private String phone;                  //记录电话
+    private String userName;              //记录用户名
+    private String lostTime;              //丢失时间
+    private String lostType;              //丢失类型
+    private String lostWhere;             //丢失地点
+    private String goodsDescribe;         //物品描述
+    private String city;                   //丢失城市
+    private String lostGoodImage;         //丢失物品照片
+    private double latitude;              //丢失地点经度
+    private double longitude;             //丢失地点纬度
+    private Users linkUsers;               //链接表（链接Users）
 
 
     public Users getLinkUsers() {

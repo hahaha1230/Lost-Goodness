@@ -102,13 +102,11 @@ public class GoodsDetailsInfoActivity extends AppCompatActivity implements AMapL
         rotateAnimation.setInterpolator(interpolator);
         goodsImage.startAnimation(rotateAnimation);
 
-
         //当前界面时显示丢失信息
         if (isLost) {
             allInfo = lostTable.getUserName() + "于" + lostTable.getLostTime() + "在" + lostTable.getLostWhere()
                     + "丢失了一个" + lostTable.getLostType() + "。详细信息为：" + lostTable.getGoodsDescribe();
             detailsInfo.setText(allInfo);
-
             //显示物品图片
             setImage(lostTable.getLostGoodImage());
 
@@ -116,10 +114,8 @@ public class GoodsDetailsInfoActivity extends AppCompatActivity implements AMapL
             allInfo = foundTable.getUserName() + "于" + foundTable.getFindTime() + "在" + foundTable.getFindWhere()
                     + "捡到了一个" + foundTable.getFindType() + "。详细信息为：" + foundTable.getGoodDescribe();
             detailsInfo.setText(allInfo);
-
             //显示物品图片
             setImage(foundTable.getFoundGoodImage());
-
         }
 
     }
@@ -187,22 +183,16 @@ public class GoodsDetailsInfoActivity extends AppCompatActivity implements AMapL
 
     /**
      * 定位回调，每次定位成功后都会调用该方法
-     * (如果每次点击都会进行定位，这个过程会很费电，也浪费资源，也可以从上个界面
-     * 进行定位，然后把经纬度传入进来)
-     *
      * @param aMapLocation
      */
     @Override
     public void onLocationChanged(AMapLocation aMapLocation) {
-        Log.d("hhh", "goods details info中定位成功");
         //如果定位成功后就不用再定位
         if (!aMapLocation.getCity().isEmpty()) {
             nowLatitude = aMapLocation.getLatitude();
             nowLongitude = aMapLocation.getLongitude();
             //停止定位
             mlocationClient.stopLocation();
-
-
             LatLng nowLocation = new LatLng(nowLatitude, nowLongitude);
             LatLng lostWhere = null;
             LatLng foundWhere = null;
@@ -220,7 +210,6 @@ public class GoodsDetailsInfoActivity extends AppCompatActivity implements AMapL
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
             try {
                 latitude = lostTable.getLatitude();
                 longitude = lostTable.getLongitude();

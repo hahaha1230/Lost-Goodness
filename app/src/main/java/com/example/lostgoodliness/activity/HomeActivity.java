@@ -23,6 +23,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -43,6 +44,7 @@ import com.amap.api.services.weather.WeatherSearchQuery;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.adapter.HomeFragmentPagerAdapter;
 import com.example.lostgoodliness.fragment.RecommendContentFragment;
+import com.example.lostgoodliness.handler.MessageHandler;
 import com.example.lostgoodliness.javabean.Users;
 import com.example.lostgoodliness.view.NavigationMenu;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -50,12 +52,26 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.bean.BmobIMConversation;
+import cn.bmob.newim.bean.BmobIMMessage;
+import cn.bmob.newim.bean.BmobIMUserInfo;
+import cn.bmob.newim.core.ConnectionStatus;
+import cn.bmob.newim.event.MessageEvent;
+import cn.bmob.newim.listener.ConnectListener;
+import cn.bmob.newim.listener.ConnectStatusChangeListener;
+import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobInstallation;
+import cn.bmob.v3.BmobInstallationManager;
+import cn.bmob.v3.InstallationListener;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
@@ -125,11 +141,32 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
          * 故这里再次初始化一次
          */
         Bmob.initialize(this, "dcc6094bb058232c23ecd85b02f9ef4b");
+        //TODO 集成：1.8、初始化IM SDK，并注册消息接收器
+
+        if (getApplicationInfo().packageName.equals(getMyProcessName())){
+            try
+            {
+                BmobIM.init(this);
+                BmobIM.registerDefaultMessageHandler(new MessageHandler());
+            }
+            catch (Exception e)
+            {
+                Log.d("hhh","bmobim init初始化失败");
+                e.printStackTrace();
+            }
+
+
+            //TODO 用户管理：2.8、批量更新本地用户信息
+           // BmobIM.getInstance().updateBatchUserInfo(List<BmobIMUserInfo>list);
+
+        }
+
 
         //获取上个界面传过来的user信息
         try {
             user = (Users) this.getIntent().getSerializableExtra("user");
             phone = user.getPhone();
+            connect(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -145,6 +182,58 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
         setInfo();
     }
 
+    private void connect(Users user) {
+       // final Users user = BmobUser.getCurrentUser(Users.class);
+        //TODO 连接：3.1、登录成功、注册成功或处于登录状态重新打开应用后执行连接IM服务器的操作
+        //判断用户是否登录，并且连接状态不是已连接，则进行连接操作
+        if (!TextUtils.isEmpty(user.getObjectId()) &&
+                BmobIM.getInstance().getCurrentStatus().getCode() != ConnectionStatus.CONNECTED.getCode()) {
+            BmobIM.connect(user.getObjectId(), new ConnectListener() {
+                @Override
+                public void done(String uid, BmobException e) {
+                    if (e == null) {
+                        //服务器连接成功就发送一个更新事件，同步更新会话及主页的小红点
+                        //TODO 会话：2.7、更新用户资料，用于在会话页面、聊天页面以及个人信息页面显示
+                       /* BmobIM.getInstance().
+                                updateUserInfo(new BmobIMUserInfo(user.getObjectId(),
+                                        user.getUsername(), user.getAvatar()));*/
+                       Log.d("hhh","connection zhong 连接成功");
+                        //EventBus.getDefault().post(new RefreshEvent());
+                    } else {
+                        Toast.makeText(HomeActivity.this,e.getMessage(),Toast.LENGTH_SHORT).show();
+
+                    }
+                }
+            });
+            //TODO 连接：3.3、监听连接状态，可通过BmobIM.getInstance().getCurrentStatus()来获取当前的长连接状态
+            BmobIM.getInstance().setOnConnectStatusChangeListener(new ConnectStatusChangeListener() {
+                @Override
+                public void onChange(ConnectionStatus status) {
+                    Toast.makeText(HomeActivity.this,status.getMsg(),Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+    }
+
+
+
+    /**
+     * 获取当前运行的进程名
+     * @return
+     */
+    public static String getMyProcessName() {
+        try {
+            File file = new File("/proc/" + android.os.Process.myPid() + "/" + "cmdline");
+            BufferedReader mBufferedReader = new BufferedReader(new FileReader(file));
+            String processName = mBufferedReader.readLine().trim();
+            mBufferedReader.close();
+            return processName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * 初始化一些配置信息
@@ -293,9 +382,10 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
                                    Toast.LENGTH_SHORT).show();
                        }
                        else {
+                         openPush();
                            isReceivePush=true;
-                           Toast.makeText(HomeActivity.this, "接收推送",
-                                   Toast.LENGTH_SHORT).show();
+                          /* Toast.makeText(HomeActivity.this, "接收推送",
+                                   Toast.LENGTH_SHORT).show();*/
                        }
                         break;
                     default:
@@ -313,6 +403,7 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
                 if (view.getTag().equals("myRecords")) {
                     Intent intent = new Intent(HomeActivity.this, MyIssueRecordActivity.class);
                     intent.putExtra("user", user);
+                    //Intent intent=new Intent(HomeActivity.this,ConversationActivity.class);
                     startActivity(intent);
                 } else if (view.getTag().equals("lost")) {
                     Intent intent = new Intent(HomeActivity.this, LostGoodsActivity.class);
@@ -329,6 +420,24 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
                 }
             }
         });
+    }
+
+    private void openPush() {
+        // 使用推送服务时的初始化操作
+        BmobInstallationManager.getInstance().initialize(new InstallationListener<BmobInstallation>() {
+            @Override
+            public void done(BmobInstallation bmobInstallation, BmobException e) {
+                if (e == null) {
+                    Log.d("hhh","openPush e==null");
+                   // Log.d(bmobInstallation.getObjectId() + "-" + bmobInstallation.getInstallationId());
+                } else {
+                    Log.d("hhh","openPush e==null");
+                   // Logger.e(e.getMessage());
+                }
+            }
+        });
+        // 启动推送服务
+        BmobPush.startWork(this);
     }
 
 
@@ -540,11 +649,8 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
         //启动定位
         mlocationClient.startLocation();
     }
-
-
     /**
      * 定位回调，每次定位成功后都会调用该方法
-     *
      * @param aMapLocation
      */
     @Override

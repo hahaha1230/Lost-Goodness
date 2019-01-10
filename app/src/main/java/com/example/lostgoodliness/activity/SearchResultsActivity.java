@@ -1,5 +1,7 @@
 package com.example.lostgoodliness.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -38,6 +40,9 @@ public class SearchResultsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
+
+
+
 
         imageLoader=ImageLoader.getInstance();
         options=new DisplayImageOptions.Builder()   // 设置图片显示相关参数
@@ -98,6 +103,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
         }
     }
+
 
 
     /**

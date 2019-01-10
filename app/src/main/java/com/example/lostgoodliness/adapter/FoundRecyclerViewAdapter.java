@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.lostgoodliness.Interface.MyRecyclerViewOnclickInterface;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
 import com.example.lostgoodliness.javabean.FoundTable;

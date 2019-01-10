@@ -346,7 +346,6 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
 
     /**
      * 根据 latlng 进行逆编码查询
-     *
      * @param latLng
      */
     private void getAddressByLatlng(LatLng latLng) {
@@ -375,7 +374,6 @@ public class GetWhereActivity extends AppCompatActivity implements AMap.OnMapCli
      * 得到逆地理编码异步查询结果
      * （异步逆编码查询成功后回调该方法）
      */
-
     @Override
     public void onRegeocodeSearched(RegeocodeResult regeocodeResult, int i) {
         dismissDialog();

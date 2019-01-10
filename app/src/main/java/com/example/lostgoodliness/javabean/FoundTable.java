@@ -9,17 +9,17 @@ import cn.bmob.v3.BmobObject;
  */
 
 public class FoundTable extends BmobObject implements Serializable{
-    private String findTime;
-    private String findWhere;
-    private String findType;
-    private String goodDescribe;
-    private String phone;
-    private String userName;
-    private String city;
-    private String foundGoodImage;
-    private double latitude;
-    private double longitude;
-    private Users linkUsers;
+    private String findTime;         //捡到时间
+    private String findWhere;        //捡到地点
+    private String findType;         //类型
+    private String goodDescribe;    //物品描述
+    private String phone;            //手机号
+    private String userName;        //用户名
+    private String city;            //城市
+    private String foundGoodImage; //捡到物品图片
+    private double latitude;       //捡到物品经度
+    private double longitude;      //捡到物品纬度
+    private Users linkUsers;       //链接表（链接Users表）
 
     public Users getLinkUsers() {
         return linkUsers;
@@ -28,8 +28,6 @@ public class FoundTable extends BmobObject implements Serializable{
     public void setLinkUsers(Users linkUsers) {
         this.linkUsers = linkUsers;
     }
-
-
 
     public String getFoundGoodImage() {
         return foundGoodImage;

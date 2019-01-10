@@ -383,7 +383,6 @@ public class SearchInfoActivity extends AppCompatActivity implements View.OnClic
                         bundle.putSerializable("foundTable", (Serializable) list);
                         intent.putExtras(bundle);
                         intent.putExtra("LostOrFound", "found");
-                        //intent.putExtra("whoseRecord","others");
                         intent.putExtra("user",user);
                         startActivity(intent);
                     }

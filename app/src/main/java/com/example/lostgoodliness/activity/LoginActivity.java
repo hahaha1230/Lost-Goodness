@@ -26,6 +26,7 @@ import java.util.List;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.SaveListener;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -146,17 +147,31 @@ public class LoginActivity extends AppCompatActivity {
     public void login() {
         final String phone = phoneNumber.getText().toString().trim();
         final String password = passwordText.getText().toString().trim();
-        if (phone.length() != 11) {
-            Toast.makeText(LoginActivity.this, "请输入正确手机格式", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         if (phone.isEmpty() || password.isEmpty()) {
             Toast.makeText(LoginActivity.this, "账户密码为空", Toast.LENGTH_SHORT).show();
             return;
         }
         savePassword(phone, password);
+        final Users user = new Users();
+        user.setUsername(phone);
+        user.setPassword(password);
 
-        final BmobQuery<Users> query = new BmobQuery<Users>();
+        user.login(new SaveListener<Users>() {
+            @Override
+            public void done(Users user, BmobException e) {
+                if (e == null) {
+                    Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                    intent.putExtra("user",user);
+                    startActivity(intent);
+                    Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(LoginActivity.this, "账号或密码不正确", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+       /* final BmobQuery<Users> query = new BmobQuery<Users>();
         query.addWhereEqualTo("phone", phone);
         query.findObjects(new FindListener<Users>() {
             @Override
@@ -164,7 +179,8 @@ public class LoginActivity extends AppCompatActivity {
                 if (e == null) {
                     if (list.size() > 0) {
                         Users user = list.get(0);
-                        if (password.equals(user.getPassword())) {
+                        Log.d("hhh","password"+password+"user password:"+user.getUserPassword());
+                        if (password.equals(user.getUserPassword())) {
                             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                             intent.putExtra("user",user);
                             startActivity(intent);
@@ -184,7 +200,7 @@ public class LoginActivity extends AppCompatActivity {
                     //出现错误
                 }
             }
-        });
+        });*/
 
 
     }

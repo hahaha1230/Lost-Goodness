@@ -25,7 +25,8 @@ import com.example.lostgoodliness.javabean.Users;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
-import net.sf.json.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 import java.io.File;
@@ -67,23 +68,20 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
     private Users user;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lost_goods);
 
         //获取上个界面传过来的user信息
-        try{
-            user=(Users) this.getIntent().getSerializableExtra("user");
-            phone=user.getPhone();
-        }
-        catch (Exception e){
+        try {
+            user = (Users) this.getIntent().getSerializableExtra("user");
+            phone = user.getPhone();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         initView();
     }
-
 
 
     /**
@@ -112,7 +110,7 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         goodsDescribe.setOnClickListener(this);
         addImage.setOnClickListener(this);
 
-        progressDialog=new ProgressDialog(LostGoodsActivity.this);
+        progressDialog = new ProgressDialog(LostGoodsActivity.this);
         progressDialog.setMessage("正在提交中...");
         progressDialog.setCancelable(false);
     }
@@ -142,7 +140,7 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
             case R.id.addImage:
                 showListDialog();
                 break;
-            case  R.id.base_tv_right_btn:
+            case R.id.base_tv_right_btn:
                 addInfoToTable();
                 break;
             default:
@@ -192,7 +190,6 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-
     /**
      * 从相册获取图片
      */
@@ -219,26 +216,22 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         lostTable.setGoodsDescribe(goodsDescribe.getText().toString());
         lostTable.setPhone(phone);
         lostTable.setUserName(user.getName());
-        Users users=new Users();
+        Users users = new Users();
         users.setObjectId(user.getObjectId());
         lostTable.setLinkUsers(users);
         if (latitude != 0 && longitude != 0) {
             lostTable.setLatitude(latitude);
             lostTable.setLongitude(longitude);
-        }
-        if (city!=null) {
+        }if (city != null) {
             lostTable.setCity(city);
-        }
-
-        if (mFile != null) {
+        }if (mFile != null) {
             imagePath = mFile.getPath();
-        }
-        if (imagePath!=null){
+        }if (imagePath != null) {
             final BmobFile bmobFile = new BmobFile(new File(imagePath));
             bmobFile.uploadblock(new UploadFileListener() {
                 @Override
                 public void done(BmobException e) {
-                    Log.d("hhh","上传的图片成功");
+                    Log.d("hhh", "上传的图片成功");
                     if (e == null) {
                         //得到上传的图片地址
                         String fileUrl = bmobFile.getFileUrl();
@@ -247,19 +240,17 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
                     }
                 }
             });
-        }
-        else {
+        } else {
             submitAndPush(lostTable);
         }
-
-
     }
 
+
     /**
-     * 提交并push
+     * 提交并推送
      * @param lostTable
      */
-    public void submitAndPush(LostTable lostTable){
+    public void submitAndPush(LostTable lostTable) {
         //向服务器提交数据
         lostTable.save(new SaveListener<String>() {
             @Override
@@ -277,20 +268,12 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
-
         //进行push
         String msg = user.getName() + "于" + lostTime.getText().toString() + "丢失了" + lostType.getText().toString();
         BmobPushManager bmobPushManager = new BmobPushManager();
         BmobQuery<BmobInstallation> query = BmobInstallation.getQuery();
-        query.addWhereEqualTo("deviceType", "android");
+        query.addWhereEqualTo("deviceType", "android");   //只推送Android设备
         bmobPushManager.setQuery(query);
-        String jsonString=new Gson().toJson(lostTable);
-        JSONArray jsonArray = new JSONArray();
-        JSONObject jsonObject=JSONObject.fromObject(jsonString);
-        //JSONObject.fromObject(str)
-
-        //org.json.JSONObject jsonObject1=jsonObject;
-
         bmobPushManager.pushMessage(msg, new PushListener() {
             @Override
             public void done(BmobException e) {
@@ -303,7 +286,6 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
                 }
             }
         });
-
         if (isSaved) {
             finish();
         }
@@ -321,51 +303,50 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-           // if (data != null) {
-                switch (requestCode) {
-                    case 0:
-                        Bundle bundle = data.getExtras();
-                        if (bundle != null) {
-                            city = bundle.getString("city");
-                            addressInfo = bundle.getString("addressInfo");
-                            latitude = bundle.getDouble("latitude");
-                            longitude = bundle.getDouble("longitude");
-                            lostWhere.setText(addressInfo);
-                        }
-                        break;
-                    case RESULT_FROM_CAMERA:
-                        if (mFile != null) {
-                            imagePath = mFile.getPath();
-                        }
-                        goodImage.setVisibility(View.VISIBLE);
-                        goodImage.setImageURI(Uri.fromFile(mFile));
-                        break;
-                    case RESULT_FROM_ALBUM:
-                        if (data == null || data.getData() == null) {
-                            return;
-                        }
-                        try {
-                            Uri originalUri = data.getData();        //获得图片的uri
-                            //这里开始的第二部分，获取图片的路径：
-                            String[] proj = {MediaStore.Images.Media.DATA};
-                            //好像是android多媒体数据库的封装接口，具体的看Android文档
-                            Cursor cursor = managedQuery(originalUri, proj, null, null, null);
-                            //按我个人理解 这个是获得用户选择的图片的索引值
-                            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-                            //将光标移至开头 ，这个很重要，不小心很容易引起越界
-                            cursor.moveToFirst();
-                            //最后根据索引值获取图片路径
-                            imagePath = cursor.getString(column_index);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                        if (mFile != null) {
-                            imagePath = mFile.getPath();
-                        }
-                        goodImage.setVisibility(View.VISIBLE);
-                        goodImage.setImageURI(data.getData());
-                        break;
-                }
+            switch (requestCode) {
+                case 0:
+                    Bundle bundle = data.getExtras();
+                    if (bundle != null) {
+                        city = bundle.getString("city");
+                        addressInfo = bundle.getString("addressInfo");
+                        latitude = bundle.getDouble("latitude");
+                        longitude = bundle.getDouble("longitude");
+                        lostWhere.setText(addressInfo);
+                    }
+                    break;
+                case RESULT_FROM_CAMERA:
+                    if (mFile != null) {
+                        imagePath = mFile.getPath();
+                    }
+                    goodImage.setVisibility(View.VISIBLE);
+                    goodImage.setImageURI(Uri.fromFile(mFile));
+                    break;
+                case RESULT_FROM_ALBUM:
+                    if (data == null || data.getData() == null) {
+                        return;
+                    }
+                    try {
+                        Uri originalUri = data.getData();        //获得图片的uri
+                        //这里开始的第二部分，获取图片的路径：
+                        String[] proj = {MediaStore.Images.Media.DATA};
+                        //好像是android多媒体数据库的封装接口，具体的看Android文档
+                        Cursor cursor = managedQuery(originalUri, proj, null, null, null);
+                        //按我个人理解 这个是获得用户选择的图片的索引值
+                        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+                        //将光标移至开头 ，这个很重要，不小心很容易引起越界
+                        cursor.moveToFirst();
+                        //最后根据索引值获取图片路径
+                        imagePath = cursor.getString(column_index);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    if (mFile != null) {
+                        imagePath = mFile.getPath();
+                    }
+                    goodImage.setVisibility(View.VISIBLE);
+                    goodImage.setImageURI(data.getData());
+                    break;
+            }
         }
     }
 

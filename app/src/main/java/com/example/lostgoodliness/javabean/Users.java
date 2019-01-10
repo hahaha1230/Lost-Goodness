@@ -1,17 +1,21 @@
 package com.example.lostgoodliness.javabean;
 
 import cn.bmob.v3.BmobObject;
+import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
 
 /**
  * Created by 佳佳 on 10/10/2018.
  */
 
-public class Users  extends BmobObject{
+public class Users  extends BmobUser{
     private String phone;
     private String name;
-    private String password;
+    private String userPassword;
     private String userIcon;
+   // private String avatar;
+
+
 
     public String getUserIcon() {
         return userIcon;
@@ -37,11 +41,19 @@ public class Users  extends BmobObject{
         this.name = name;
     }
 
-    public String getPassword() {
-        return password;
+    public String getUserPassword() {
+        return userPassword;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
     }
+
+  /*  public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }*/
 }

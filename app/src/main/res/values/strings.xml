@@ -3,5 +3,6 @@
 
     <string name="reccommand_text">生命是一桩太好的事情，好到无论选择什么方式度过，好像都是一种浪费。</string>
     <string name="splash_text">生死看淡，不服来干！</string>
+    <string name="voice_up_tips">手指上滑，取消发送</string>
 
 </resources>

@@ -1,8 +1,11 @@
 package com.example.lostgoodliness.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lostgoodliness.R;
+import com.example.lostgoodliness.activity.ChatActivity;
 import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
@@ -25,6 +29,9 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.List;
 
+import cn.bmob.newim.BmobIM;
+import cn.bmob.newim.bean.BmobIMConversation;
+import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
@@ -41,6 +48,7 @@ public class LostSearchResultAdapter extends RecyclerView.Adapter<LostSearchResu
     private boolean isScrolling = false;   //监视当前是否处在滑动状态
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
+    private  AlertDialog.Builder builder;
 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -72,11 +80,14 @@ public class LostSearchResultAdapter extends RecyclerView.Adapter<LostSearchResu
      * @param imageLoader
      * @param options
      */
-    public LostSearchResultAdapter(List<LostTable> searchResults,  Context context, ImageLoader imageLoader, DisplayImageOptions options) {
+    public LostSearchResultAdapter(List<LostTable> searchResults,  Context context, ImageLoader imageLoader,
+                                   DisplayImageOptions options) {
         this.mLostSearchResult = searchResults;
         this.context = context;
         this.imageLoader = imageLoader;
         this.options = options;
+        this.builder= new AlertDialog.Builder(context);
+        builder.setTitle("选择类型");
     }
 
     @Override
@@ -84,23 +95,12 @@ public class LostSearchResultAdapter extends RecyclerView.Adapter<LostSearchResu
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.people_item_layout
                 , parent, false);
         final ViewHolder holder = new ViewHolder(view);
-        holder.textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int position = holder.getAdapterPosition();
-                LostTable lostTable = mLostSearchResult.get(position);
-                Intent intent = new Intent(context, GoodsDetailsInfoActivity.class);
-                intent.putExtra("type", "lost");
-                intent.putExtra("lostInfo", lostTable);
-                context.startActivity(intent);
-            }
-        });
         return holder;
     }
 
     @Override
     public void onBindViewHolder(final LostSearchResultAdapter.ViewHolder holder, int position) {
-        LostTable lostTable = mLostSearchResult.get(position);
+       final LostTable lostTable = mLostSearchResult.get(position);
         String display = lostTable.getUserName();
         if (lostTable != null) {
             display += "在" + lostTable.getCity() + "丢失了一个" + lostTable.getLostType();
@@ -116,10 +116,45 @@ public class LostSearchResultAdapter extends RecyclerView.Adapter<LostSearchResu
         //设置tag
         String userIcon=lostTable.getLinkUsers().getUserIcon();
         holder.userIcon.setTag(userIcon);
-       /* if (!isScrolling && userIcon.equals(holder.userIcon.getTag())) {
-
-        }*/
         imageLoader.displayImage(userIcon, holder.userIcon, options);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String[] types = {"查看信息", "和他聊天"};
+                builder.setItems(types, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (types[which].equals("查看信息"))
+                        {
+                            Intent intent = new Intent(context, GoodsDetailsInfoActivity.class);
+                            intent.putExtra("type", "lost");
+                            intent.putExtra("lostInfo", lostTable);
+                            context.startActivity(intent);
+                        }
+                        else if (types[which].equals("和他聊天"))
+                        {
+                            BmobIMUserInfo info = new BmobIMUserInfo(lostTable.getLinkUsers().getObjectId(),
+                                   lostTable.getLinkUsers().getName(),lostTable.getLinkUsers().getUserIcon());
+                            BmobIMConversation conversationEntrance = BmobIM.getInstance().startPrivateConversation(info, null);
+                            Bundle bundle = new Bundle();
+                            bundle.putSerializable("c", conversationEntrance);
+                            Intent intent = new Intent();
+                            intent.setClass(context, ChatActivity.class);
+                            intent.putExtra("user",lostTable.getLinkUsers().getObjectId());
+                            if (bundle != null) {
+                                intent.putExtra(context.getPackageName(), bundle);
+                            }
+                            context.startActivity(intent);
+                        }
+                    }
+                });
+
+                builder.show();
+
+            }
+        });
+
     }
 
 

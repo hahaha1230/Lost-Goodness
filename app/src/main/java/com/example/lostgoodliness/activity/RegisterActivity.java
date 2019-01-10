@@ -1,7 +1,6 @@
 package com.example.lostgoodliness.activity;
 
 import android.content.Intent;
-import android.os.CountDownTimer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -81,7 +80,6 @@ public class RegisterActivity extends AppCompatActivity{
     private void nextProgress() {
         final String phone=phoneNumber.getText().toString().trim();
         String code=verifyCode.getText().toString();
-
         //验证手机号
         if (!isMobileNO(phone)){
             Toast.makeText(this,"手机号格式不正确",Toast.LENGTH_SHORT).show();
@@ -89,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity{
         }
         //验证验证码是否正确
         else {
-            BmobSMS.verifySmsCode(phone, code, new UpdateListener() {
+           BmobSMS.verifySmsCode(phone, code, new UpdateListener() {
                 @Override
                 public void done(BmobException e) {
                     if (e == null) {
@@ -127,7 +125,6 @@ public class RegisterActivity extends AppCompatActivity{
      */
     public void getCode(){
        final String phone=phoneNumber.getText().toString().trim();
-
        if (!isMobileNO(phone))
        {
            Toast.makeText(this,"手机号格式不正确",Toast.LENGTH_SHORT).show();

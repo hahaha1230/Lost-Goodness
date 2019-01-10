@@ -4,10 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Path;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +13,12 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import com.example.lostgoodliness.Interface.MyRecyclerViewOnclickInterface;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
-import com.example.lostgoodliness.javabean.FoundTable;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.UpdateListener;
@@ -85,7 +78,7 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
 
         imageLoader.displayImage(userIcon,holder.userIcon,options);
 
-      //点击事件
+       //点击事件
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

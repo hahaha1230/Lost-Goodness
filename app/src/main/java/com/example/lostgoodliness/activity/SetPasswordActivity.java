@@ -72,6 +72,7 @@ public class SetPasswordActivity extends AppCompatActivity {
         initView();
     }
 
+
     /**
      * 初始化界面
      */
@@ -156,7 +157,6 @@ public class SetPasswordActivity extends AppCompatActivity {
                     final Users users = new Users();
                     users.setPassword(myPassword);
                     users.update(userId, new UpdateListener() {
-
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
@@ -179,7 +179,6 @@ public class SetPasswordActivity extends AppCompatActivity {
                     }
                     progressDialog.show();
                     //上传图片
-                    Log.d("hhh","开始上传图片");
                     if (imagePath!=null){
                         final BmobFile bmobFile = new BmobFile(new File(imagePath));
                         bmobFile.uploadblock(new UploadFileListener() {
@@ -188,7 +187,6 @@ public class SetPasswordActivity extends AppCompatActivity {
                                 if (e == null) {
                                     //得到上传的图片地址
                                     fileUrl = bmobFile.getFileUrl();
-                                    Log.d("hhh","图片上传成功");
                                     register(myPassword,true);
 
                                 }
@@ -197,6 +195,7 @@ public class SetPasswordActivity extends AppCompatActivity {
                     }
                     else {
                         register(myPassword,false);
+                       // chatRegister();
                     }
                 }
 
@@ -204,30 +203,31 @@ public class SetPasswordActivity extends AppCompatActivity {
         });
     }
 
-
     /**
      * 进行注册
      * @param myPassword
      */
     private void register(String myPassword,boolean haveAImage){
-
-        Log.d("hhh","实例化users类，进行保存用户信息");
         //实例化users类，进行保存用户信息
         Users users = new Users();
         users.setPhone(phone);
-        users.setPassword(myPassword);
         users.setName(userName.getText().toString());
+        users.setUsername(phone);
+        users.setUserPassword(myPassword);
+        users.setPassword(myPassword);
+
         if (haveAImage){
             users.setUserIcon(fileUrl);
         }
 
         //提交用户信息
-        users.save(new SaveListener<String>() {
+        users.signUp(new SaveListener<Users>() {
+
             @Override
-            public void done(String s, BmobException e) {
+            public void done(Users users, BmobException e) {
                 if (e == null) {
                     progressDialog.dismiss();
-                    Toast.makeText(SetPasswordActivity.this, "注册成功：" + s,
+                    Toast.makeText(SetPasswordActivity.this, "注册成功：" ,
                             Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SetPasswordActivity.this,
                             LoginActivity.class);
@@ -240,6 +240,8 @@ public class SetPasswordActivity extends AppCompatActivity {
                             e.getMessage() + "\n");
                 }
             }
+
+
         });
     }
 
@@ -326,9 +328,7 @@ public class SetPasswordActivity extends AppCompatActivity {
                         Uri originalUri = data.getData();
                         //这里开始的第二部分，获取图片的路径：
                         String[] proj = {MediaStore.Images.Media.DATA};
-                        //好像是android多媒体数据库的封装接口，具体的看Android文档
                         Cursor cursor = managedQuery(originalUri, proj, null, null, null);
-                        //按我个人理解 这个是获得用户选择的图片的索引值
                         int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
                         //将光标移至开头 ，这个很重要，不小心很容易引起越界
                         cursor.moveToFirst();
@@ -350,7 +350,6 @@ public class SetPasswordActivity extends AppCompatActivity {
 
     /**
      * 打开系统图片裁剪功能
-     *
      * @param uri  uri
      */
     private void startPhotoZoom(Uri uri) {

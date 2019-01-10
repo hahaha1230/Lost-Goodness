@@ -80,7 +80,6 @@ public class MyIssueRecordActivity extends AppCompatActivity  implements View.On
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-
             }
 
             @Override
@@ -214,7 +213,6 @@ public class MyIssueRecordActivity extends AppCompatActivity  implements View.On
         }
 
     }
-
 
     /**
      *由ViewPager的滑动修改底部导航Text的颜色

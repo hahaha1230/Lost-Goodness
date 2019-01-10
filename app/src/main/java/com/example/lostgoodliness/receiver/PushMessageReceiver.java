@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -17,7 +18,11 @@ import android.widget.RemoteViews;
 import com.example.lostgoodliness.activity.GoodsDetailsInfoActivity;
 import com.example.lostgoodliness.activity.HomeActivity;
 import com.example.lostgoodliness.R;
+import com.example.lostgoodliness.javabean.LostTable;
+import com.google.gson.Gson;
 
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -41,9 +46,9 @@ public class PushMessageReceiver extends BroadcastReceiver {
             if (!HomeActivity.isReceivePush){
                 return;
             }
+
             //对message进行简单解析
             String msg= intent.getStringExtra(PushConstants.EXTRA_PUSH_MESSAGE_STRING);
-            Log.d("hhh","msg:"+msg);
             JSONTokener jsonTokener=new JSONTokener(msg);
             try {
                 JSONObject object=(JSONObject)jsonTokener.nextValue();
@@ -52,9 +57,7 @@ public class PushMessageReceiver extends BroadcastReceiver {
             catch (JSONException e){
                 e.printStackTrace();
             }
-           // notificationManager=(NotificationManager)
             notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-           // showNotification(context, message);
            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0,
                     new Intent(context, GoodsDetailsInfoActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationManager manager=(NotificationManager) context.getSystemService

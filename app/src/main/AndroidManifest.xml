@@ -35,9 +35,9 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:resizeableActivity="false"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:resizeableActivity="false"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <!-- 对内容提供器进行注册 -->
@@ -59,11 +59,34 @@
             android:name="com.amap.api.v2.apikey"
             android:value="f49e025768f66edaf0aae40d0500fe43" />
 
+        <!-- TODO 集成：1.3、配置Bmob平台的应用密钥 -->
+        <meta-data
+            android:name="Bmob_APP_KEY"
+            android:value="dcc6094bb058232c23ecd85b02f9ef4b" />
 
-        <!--TODO 集成：1.2、添加推送所需要的服务和广播-->
+        <!-- TODO 集成：1.5、配置IM SDK需要的广播和服务，聊天所需服务 -->
+        <receiver android:name="cn.bmob.newim.core.ConnectChangeReceiver">
+            <intent-filter>
+                <action android:name="cn.bmob.action.RECONNECT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="cn.bmob.newim.core.service.BmobIMService"
+            android:process=":bmobcore" />
+        <service
+            android:name="cn.bmob.newim.core.service.NotifyService"
+            android:process=":bmobcore" />
+        <service android:name="cn.bmob.newim.core.service.ReConnectService" />
+        <service android:name="cn.bmob.newim.core.service.HeartBeatService" />
+
+        <!-- TODO 集成：1.2、添加推送所需要的服务和广播 -->
         <service
             android:name="cn.bmob.push.lib.service.PushService"
-            android:exported="false"
+            android:exported="true"
             android:label="PushService"
             android:process=":bmobpush">
             <intent-filter>
@@ -71,10 +94,8 @@
             </intent-filter>
         </service>
 
-
         <receiver android:name="cn.bmob.push.PushReceiver">
             <intent-filter>
-
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <!-- 解锁完成后会调用 -->
@@ -104,7 +125,6 @@
             </intent-filter>
         </receiver>
 
-
         <activity android:name=".activity.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -112,7 +132,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.LoginActivity"></activity>
+        <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.LostGoodsActivity" />
         <activity android:name=".activity.GetWhereActivity" />
         <activity android:name=".activity.FoundGoodsActivity" />
@@ -123,7 +143,10 @@
         <activity android:name=".activity.HomeActivity" />
         <activity android:name=".activity.MyIssueRecordActivity" />
         <activity android:name=".activity.LostPasswordActivity" />
-        <activity android:name=".activity.GoodsDetailsInfoActivity"></activity>
+        <activity android:name=".activity.GoodsDetailsInfoActivity" />
+        <activity android:name=".activity.ConversationActivity" />
+        <activity android:name=".activity.FindFriendsActivity" />
+        <activity android:name=".activity.ChatActivity"></activity>
     </application>
 
 </manifest>

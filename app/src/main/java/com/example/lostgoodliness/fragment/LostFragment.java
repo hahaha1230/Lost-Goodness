@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.example.lostgoodliness.adapter.LostRecyclerViewAdapter;
 import com.example.lostgoodliness.javabean.Users;
 import com.example.lostgoodliness.utils.DividerItemDecoration;
-import com.example.lostgoodliness.Interface.MyRecyclerViewOnclickInterface;
+import com.example.lostgoodliness.Interface.OnRecyclerViewListener;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.javabean.LostTable;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -39,7 +39,7 @@ import cn.bmob.v3.listener.FindListener;
  * Created by 佳佳 on 10/14/2018.
  */
 
-public class LostFragment extends Fragment implements MyRecyclerViewOnclickInterface{
+public class LostFragment extends Fragment {
     private List<LostTable> lostTableList=new ArrayList<>();
     private LostRecyclerViewAdapter mAdapter;
     private SwipeRefreshLayout lostRecordRefresh;
@@ -144,7 +144,7 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
      */
     private void initData() {
         progressDialog.show();
-        new Thread(new Runnable() {
+        new Thread(new Runnable() {         //开启子线程请求网络数据
             @Override
             public void run() {
                 queryLost.findObjects(new FindListener<LostTable>() {
@@ -152,13 +152,10 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
                     public void done(List<LostTable> list, BmobException e) {
                         if (list.size()>0){
                         lostTableList=list;
-                        //获取到数据后通知主线程更新数据
-                        Message message=new Message();
+                        Message message=new Message();    //获取到数据后通知主线程更新数据
                         message.what=UPDATE_DATA;
                         handler.sendMessage(message);
-                        }
-                        else {
-                            //没有获取到数据也通知主线程更新界面
+                        } else {                    //没有获取到数据也通知主线程更新界面
                             Message message=new Message();
                             message.what=UPDATE_TEXT;
                             handler.sendMessage(message);
@@ -167,7 +164,6 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
                 });
             }
         }).start();
-
     }
 
     /**
@@ -179,18 +175,13 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
                 case UPDATE_DATA:
                     progressDialog.dismiss();
                     mAdapter = new LostRecyclerViewAdapter(getActivity(), lostTableList,user,imageLoader,options);
-                    //设置布局管理器
                     LinearLayoutManager layoutManager=new LinearLayoutManager(getActivity());
                     mRecyclerview.setLayoutManager(layoutManager);
-                    //设置adapter
                     mRecyclerview.setAdapter(mAdapter);
-                    //添加分割线
                     mRecyclerview.addItemDecoration(new DividerItemDecoration(getActivity(),
                             DividerItemDecoration.VERTICAL_LIST));
-                   // mAdapter.setOnItemClickLitener(getActivity());
                     break;
                 case UPDATE_TEXT:
-                    Log.d("hhh","没有获取到数据");
                     Toast.makeText(getActivity(),"没有数据哦",Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     break;
@@ -201,13 +192,5 @@ public class LostFragment extends Fragment implements MyRecyclerViewOnclickInter
     };
 
 
-    @Override
-    public void onItemClick(View view, int position) {
-        Toast.makeText(getActivity(), lostTableList.get(position).getPhone(), Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public void onItemLongClick(View view, int position) {
-        Toast.makeText(getActivity(), "onItemLongClick" + lostTableList.get(position), Toast.LENGTH_SHORT).show();
-    }
 }

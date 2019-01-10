@@ -17,11 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.lostgoodliness.adapter.FoundRecyclerViewAdapter;
-import com.example.lostgoodliness.adapter.LostRecyclerViewAdapter;
-import com.example.lostgoodliness.javabean.LostTable;
 import com.example.lostgoodliness.javabean.Users;
 import com.example.lostgoodliness.utils.DividerItemDecoration;
-import com.example.lostgoodliness.Interface.MyRecyclerViewOnclickInterface;
+import com.example.lostgoodliness.Interface.OnRecyclerViewListener;
 import com.example.lostgoodliness.javabean.FoundTable;
 import com.example.lostgoodliness.R;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -38,7 +36,7 @@ import cn.bmob.v3.listener.FindListener;
  * Created by 佳佳 on 10/14/2018.
  */
 
-public class FoundFragment extends Fragment implements MyRecyclerViewOnclickInterface{
+public class FoundFragment extends Fragment  {
     //@BindView(R.id.foundFragmentRV)
     public static final int UPDATE_DATA=1;      //获取到数据时候通知主线程加载数据
     public static final int UPDATE_TEXT=2;      //未获取到数据时候通知主线程更改界面
@@ -103,7 +101,7 @@ public class FoundFragment extends Fragment implements MyRecyclerViewOnclickInte
 
 
     /**
-     * 帅新界面
+     * 刷新界面
      */
     private void refresh(){
         queryLost.findObjects(new FindListener<FoundTable>() {
@@ -111,7 +109,7 @@ public class FoundFragment extends Fragment implements MyRecyclerViewOnclickInte
             public void done(List<FoundTable> list, BmobException e) {
                 if (list.size()==0){
                     mRecyclerview.setVisibility(View.GONE);
-                    Toast.makeText(getActivity(),"是真的没有记录哦",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"没有记录哦",Toast.LENGTH_SHORT).show();
                     foundRecordRefresh.setRefreshing(false);
                     return;
                 }
@@ -186,7 +184,6 @@ public class FoundFragment extends Fragment implements MyRecyclerViewOnclickInte
                     //mAdapter.setOnItemClickLitener(getActivity());
                     break;
                 case UPDATE_TEXT:
-                    Log.d("hhh","没有获取到数据");
                     Toast.makeText(getActivity(),"没有数据哦",Toast.LENGTH_SHORT).show();
                     progressDialog.dismiss();
                     break;
@@ -196,16 +193,4 @@ public class FoundFragment extends Fragment implements MyRecyclerViewOnclickInte
         }
     };
 
-
-
-    @Override
-    public void onItemClick(View view, int position) {
-        Toast.makeText(getActivity(), foundTableList.get(position).getPhone(), Toast.LENGTH_SHORT).show();
-    }
-
-
-    @Override
-    public void onItemLongClick(View view, int position) {
-        Toast.makeText(getActivity(), "onItemLongClick" + foundTableList.get(position), Toast.LENGTH_SHORT).show();
-    }
 }
