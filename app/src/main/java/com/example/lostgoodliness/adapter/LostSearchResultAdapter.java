@@ -101,7 +101,7 @@ public class LostSearchResultAdapter extends RecyclerView.Adapter<LostSearchResu
     @Override
     public void onBindViewHolder(final LostSearchResultAdapter.ViewHolder holder, int position) {
        final LostTable lostTable = mLostSearchResult.get(position);
-        String display = lostTable.getUserName();
+        String display = lostTable.getLinkUsers().getName();
         if (lostTable != null) {
             display += "在" + lostTable.getCity() + "丢失了一个" + lostTable.getLostType();
         } else {

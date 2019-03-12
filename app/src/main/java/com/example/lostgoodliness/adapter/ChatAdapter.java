@@ -2,6 +2,7 @@ package com.example.lostgoodliness.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.example.lostgoodliness.holder.BaseViewHolder;
@@ -189,6 +190,8 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     @Override
     public int getItemViewType(int position) {
         BmobIMMessage message = msgs.get(position);
+        Log.d("hhh","current uid:"+currentUid);
+        Log.d("hhh","message from id:"+message.getFromId());
         if(message.getMsgType().equals(BmobIMMessageType.IMAGE.getType())){
             return message.getFromId().equals(currentUid) ? TYPE_SEND_IMAGE: TYPE_RECEIVER_IMAGE;
         }else if(message.getMsgType().equals(BmobIMMessageType.LOCATION.getType())){

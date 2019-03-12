@@ -53,7 +53,7 @@ public class ReceiveImageHolder extends BaseViewHolder {
     //可使用buildFromDB方法转化为指定类型的消息
     final BmobIMImageMessage message = BmobIMImageMessage.buildFromDB(false,msg);
     //显示图片
-    ImageLoaderFactory.getLoader().load(iv_picture,message.getRemoteUrl(),  R.mipmap.ic_launcher,new ImageLoadingListener(){;
+    ImageLoaderFactory.getLoader().load(iv_picture,message.getRemoteUrl(),R.mipmap.ic_launcher,new ImageLoadingListener(){;
 
     @Override
       public void onLoadingStarted(String s, View view) {

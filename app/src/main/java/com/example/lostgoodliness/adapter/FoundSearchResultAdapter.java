@@ -94,7 +94,7 @@ public class FoundSearchResultAdapter extends RecyclerView.Adapter<FoundSearchRe
     @Override
     public void onBindViewHolder(FoundSearchResultAdapter.ViewHolder holder, int position) {
         final FoundTable foundTable=mFoundSearchResult.get(position);
-        String display=foundTable.getUserName();
+        String display=foundTable.getLinkUsers().getName();
         if (foundTable.getCity()!=null){
             display+="在"+foundTable.getCity() +"捡到了一个" +foundTable.getFindType();
         }

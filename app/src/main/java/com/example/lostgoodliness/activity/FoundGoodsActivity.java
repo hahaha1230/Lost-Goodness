@@ -213,7 +213,6 @@ public class FoundGoodsActivity extends AppCompatActivity implements View.OnClic
         foundTable.setCity(city);
         foundTable.setLongitude(longitude);
         foundTable.setLatitude(latitude);
-        foundTable.setUserName(user.getName());
         Users users=new Users();
         users.setObjectId(user.getObjectId());
         foundTable.setLinkUsers(users);
@@ -362,7 +361,7 @@ public class FoundGoodsActivity extends AppCompatActivity implements View.OnClic
         dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                findTime.setText(year + "-" + month + "-" + dayOfMonth);
+                findTime.setText(year + "-" + month+1 + "-" + dayOfMonth);
             }
         }, calendar.get(Calendar.YEAR), calendar
                 .get(Calendar.MONTH), calendar

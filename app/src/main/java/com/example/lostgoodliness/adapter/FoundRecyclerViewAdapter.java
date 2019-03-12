@@ -64,7 +64,7 @@ public class FoundRecyclerViewAdapter extends RecyclerView.Adapter<FoundRecycler
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final FoundTable foundTable=mDatas.get(position);
-        String display="me("+foundTable.getUserName();
+        String display="me("+foundTable.getLinkUsers().getName();
         if (foundTable.getCity()!=null){
             display+=")在"+foundTable.getCity() +"捡到了一个" +foundTable.getFindType();
         }

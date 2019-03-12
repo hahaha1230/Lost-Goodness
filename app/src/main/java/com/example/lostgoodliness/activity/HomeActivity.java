@@ -119,7 +119,7 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
     private boolean isPressedBackOnce = false;       //记录是否点击过一次back
     private long firstPressedTime = 0;               //记录第一次点击back时间
     private long secondPressedTime = 0;              //记录第二次点击back时间
-    private Users user;
+    public static Users user;
     private String phone;                            //记录手机号
     private String weatherNow;                       //记录所在城市的天气
     private String city;                             //记录所在城市
@@ -661,6 +661,7 @@ public class HomeActivity extends AppCompatActivity implements AMapLocationListe
             mlocationClient.stopLocation();
         }
         searchForcastWeather();
+
     }
 
 

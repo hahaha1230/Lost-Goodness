@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +59,7 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
         final LostTable lostTable=mDatas.get(position);
-        String display="me("+lostTable.getUserName();
+        String display="me("+lostTable.getLinkUsers().getName();
         if (lostTable!=null)
         {
             display+=")在"+lostTable.getCity()+"丢失了一个" + lostTable.getLostType();
@@ -69,6 +70,9 @@ public class LostRecyclerViewAdapter extends RecyclerView.Adapter<LostRecyclerVi
         holder.tv.setText(display );
         holder.phoneTV.setText(lostTable.getPhone());
         holder.date.setText(lostTable.getLostTime());
+
+        Log.d("hhh","连接用户信息"+ lostTable.getLinkUsers().getName());
+
         String userIcon=lostTable.getLinkUsers().getUserIcon();
         holder.userIcon.setTag(userIcon);
         /*if(!lostTable.getLinkUsers().getUserIcon().equals(holder.userIcon.getTag()))

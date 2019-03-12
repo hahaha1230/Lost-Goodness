@@ -104,14 +104,14 @@ public class GoodsDetailsInfoActivity extends AppCompatActivity implements AMapL
 
         //当前界面时显示丢失信息
         if (isLost) {
-            allInfo = lostTable.getUserName() + "于" + lostTable.getLostTime() + "在" + lostTable.getLostWhere()
+            allInfo = lostTable.getLinkUsers().getName() + "于" + lostTable.getLostTime() + "在" + lostTable.getLostWhere()
                     + "丢失了一个" + lostTable.getLostType() + "。详细信息为：" + lostTable.getGoodsDescribe();
             detailsInfo.setText(allInfo);
             //显示物品图片
             setImage(lostTable.getLostGoodImage());
 
         } else { //当前界面要显示的是捡到信息
-            allInfo = foundTable.getUserName() + "于" + foundTable.getFindTime() + "在" + foundTable.getFindWhere()
+            allInfo = foundTable.getLinkUsers().getName() + "于" + foundTable.getFindTime() + "在" + foundTable.getFindWhere()
                     + "捡到了一个" + foundTable.getFindType() + "。详细信息为：" + foundTable.getGoodDescribe();
             detailsInfo.setText(allInfo);
             //显示物品图片

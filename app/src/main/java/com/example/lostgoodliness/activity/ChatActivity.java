@@ -43,6 +43,7 @@ import cn.bmob.newim.bean.BmobIMConversation;
 import cn.bmob.newim.bean.BmobIMImageMessage;
 import cn.bmob.newim.bean.BmobIMMessage;
 import cn.bmob.newim.bean.BmobIMTextMessage;
+import cn.bmob.newim.bean.BmobIMUserInfo;
 import cn.bmob.newim.core.BmobIMClient;
 import cn.bmob.newim.core.ConnectionStatus;
 import cn.bmob.newim.listener.MessageSendListener;
@@ -416,8 +417,11 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(this, "请输入内容", Toast.LENGTH_SHORT).show();
             return;
         }
-        //TODO 发送消息：6.1、发送文本消息
         BmobIMTextMessage msg = new BmobIMTextMessage();
+        Log.d("hhh","home activity 里面user"+HomeActivity.user.getObjectId()+";"+HomeActivity.user.getName());
+        BmobIMUserInfo info=new BmobIMUserInfo(HomeActivity.user.getObjectId(),
+                HomeActivity.user.getName(),HomeActivity.user.getUserIcon());
+       // msg.setBmobIMUserInfo(info);
         msg.setContent(text);
         //可随意设置额外信息
         Map<String, Object> map = new HashMap<>();

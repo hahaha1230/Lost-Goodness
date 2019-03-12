@@ -215,7 +215,6 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         lostTable.setLostWhere(lostWhere.getText().toString());
         lostTable.setGoodsDescribe(goodsDescribe.getText().toString());
         lostTable.setPhone(phone);
-        lostTable.setUserName(user.getName());
         Users users = new Users();
         users.setObjectId(user.getObjectId());
         lostTable.setLinkUsers(users);
@@ -359,7 +358,7 @@ public class LostGoodsActivity extends AppCompatActivity implements View.OnClick
         dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                lostTime.setText(year + "-" + month + "-" + dayOfMonth);
+                lostTime.setText(year + "-" + month+1 + "-" + dayOfMonth);
             }
         }, calendar.get(Calendar.YEAR), calendar
                 .get(Calendar.MONTH), calendar

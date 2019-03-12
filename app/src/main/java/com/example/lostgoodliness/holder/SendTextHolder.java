@@ -20,6 +20,7 @@ import cn.bmob.newim.listener.MessageSendListener;
 import cn.bmob.v3.exception.BmobException;
 import com.example.lostgoodliness.R;
 import com.example.lostgoodliness.Interface.OnRecyclerViewListener;
+import com.example.lostgoodliness.activity.HomeActivity;
 import com.example.lostgoodliness.utils.ImageLoaderFactory;
 
 /**
@@ -58,7 +59,9 @@ public class SendTextHolder extends BaseViewHolder implements View.OnClickListen
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     final BmobIMUserInfo info = message.getBmobIMUserInfo();
     //加载头像
-    ImageLoaderFactory.getLoader().loadAvator(iv_avatar,info != null ? info.getAvatar() : null, R.mipmap.head);
+    //Log.d("hhh","send text 头像为"+info.getAvatar());
+    ImageLoaderFactory.getLoader().loadAvator(iv_avatar, HomeActivity.user != null ?
+            HomeActivity.user.getUserIcon() : null, R.mipmap.head);
     //获取时间
     String time = dateFormat.format(message.getCreateTime());
     //获取内容

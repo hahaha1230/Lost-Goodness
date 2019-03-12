@@ -8,7 +8,6 @@ import cn.bmob.v3.BmobObject;
 
 public class LostTable extends BmobObject {
     private String phone;                  //记录电话
-    private String userName;              //记录用户名
     private String lostTime;              //丢失时间
     private String lostType;              //丢失类型
     private String lostWhere;             //丢失地点
@@ -58,14 +57,6 @@ public class LostTable extends BmobObject {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
     }
 
     public String getPhone() {

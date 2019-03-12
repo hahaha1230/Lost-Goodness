@@ -14,7 +14,6 @@ public class FoundTable extends BmobObject implements Serializable{
     private String findType;         //类型
     private String goodDescribe;    //物品描述
     private String phone;            //手机号
-    private String userName;        //用户名
     private String city;            //城市
     private String foundGoodImage; //捡到物品图片
     private double latitude;       //捡到物品经度
@@ -61,13 +60,6 @@ public class FoundTable extends BmobObject implements Serializable{
         this.longitude = longitude;
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 
     public String getFindTime() {
         return findTime;

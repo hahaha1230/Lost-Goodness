@@ -34,14 +34,13 @@ public class SearchResultsActivity extends AppCompatActivity {
     private String findOrLost;
     private boolean isLost = true;
     private Users user;
+    private RecyclerView recyclerView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
-
-
 
 
         imageLoader=ImageLoader.getInstance();
@@ -53,7 +52,7 @@ public class SearchResultsActivity extends AppCompatActivity {
 
         initData();
         initView();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.searchResult);
+        recyclerView = (RecyclerView) findViewById(R.id.searchResult);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
@@ -64,7 +63,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             adapter.setHasStableIds(true);
             recyclerView.addItemDecoration(new DividerItemDecoration(this,
                     DividerItemDecoration.VERTICAL_LIST));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            /*recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     // State有三种状态：SCROLL_STATE_IDLE（静止）、SCROLL_STATE_DRAGGING（上升）、
@@ -76,10 +75,9 @@ public class SearchResultsActivity extends AppCompatActivity {
                     {
                         adapter.setScrolling(true);
                     }
-
                     super.onScrollStateChanged(recyclerView, newState);
                 }
-            });
+            });*/
             recyclerView.setAdapter(adapter);
         } else if (isLost) {
             final LostSearchResultAdapter adapter = new LostSearchResultAdapter(mLostTable,
@@ -87,7 +85,7 @@ public class SearchResultsActivity extends AppCompatActivity {
             adapter.setHasStableIds(true);
             recyclerView.addItemDecoration(new DividerItemDecoration(this,
                     DividerItemDecoration.VERTICAL_LIST));
-            recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+          /*  recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
                 public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                     if (newState ==0) { // 滚动静止时才加载图片资源，极大提升流畅度
@@ -99,10 +97,12 @@ public class SearchResultsActivity extends AppCompatActivity {
                     }
                     super.onScrollStateChanged(recyclerView, newState);
                 }
-            });
+            });*/
             recyclerView.setAdapter(adapter);
         }
+
     }
+
 
 
 
